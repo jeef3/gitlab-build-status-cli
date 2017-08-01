@@ -26,7 +26,7 @@ try {
 
 let buildsRaw;
 try {
-  const buildsRaw = fs.readFileSync('./.build-status/builds.json', 'utf8');
+  buildsRaw = fs.readFileSync('./.build-status/builds.json', 'utf8');
 } catch (err) {
   buildsRaw = '{}';
 }
