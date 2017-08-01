@@ -119,4 +119,5 @@ getCurrentBranch()
   .then(getCommitshForUpstream)
   .then(fetchBuildStatus)
   .then(saveBuildStatus)
-  .then(printStatus);
+  .then(printStatus)
+  .catch(err => console.log(chalk.cyan('\uf05e')));
