@@ -1,0 +1,14 @@
+{
+  "name": "git-build-status",
+  "version": "1.0.0",
+  "description": "Check your remote build sttatus",
+  "main": "index.js",
+  "author": "Jeff Knaggs <mail@jeef3.com>",
+  "license": "MIT",
+  "bin": {
+    "build-status": "./index.js"
+  },
+  "dependencies": {
+    "chalk": "^2.0.1"
+  }
+}
