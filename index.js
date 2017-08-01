@@ -8,10 +8,29 @@ const chalk = require('chalk');
 const CURRENT_BRANCH = 'git rev-parse --abbrev-ref HEAD';
 const ORIGIN_COMMIT = branch => `git rev-parse origin/${branch}`;
 
-const configRaw = fs.readFileSync('./.build-status/config.json', 'utf8');
-const config = JSON.parse(configRaw);
+let configRaw
+try {
+  configRaw = fs.readFileSync('./.build-status/config.json', 'utf8');
+} catch (err) {
+  console.log('You need to add a ./build-status/config.json');
+  return;
+}
 
-const buildsRaw = fs.readFileSync('./.build-status/builds.json', 'utf8');
+let config;
+try {
+  config = JSON.parse(configRaw);
+} catch (err) {
+  console.log('Invalid config file');
+  return;
+}
+
+let buildsRaw;
+try {
+  const buildsRaw = fs.readFileSync('./.build-status/builds.json', 'utf8');
+} catch (err) {
+  buildsRaw = '{}';
+}
+
 const builds = JSON.parse(buildsRaw);
 
 function getCurrentBranch() {
