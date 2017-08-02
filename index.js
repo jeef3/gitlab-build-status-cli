@@ -66,6 +66,8 @@ function getCommitshForUpstream(branch) {
 function fetchBuildStatus(commitsh) {
   const url = `${config.url}/api/v4/projects/${config.projectId}/repository/commits/${commitsh}/statuses`;
 
+  console.log('Getting pipeline status...');
+
   return new Promise((resolve, reject) => {
     // if (builds[commitsh]) {
     //   resolve({
@@ -107,13 +109,15 @@ function printStatus(statuses) {
   // console.log(JSON.stringify(statuses, '', 2));
   const table = new Table({
     head: [
-      '', 
-      chalk.white.bold('Coverage'), 
+      '',
+      chalk.white.bold('Coverage'),
       chalk.white.bold('Task')
     ],
   });
 
-  for (let i in statuses) {
+  const sorted = statuses.sort((s1, s2) => s1.id - s2.id);
+
+  for (let i in sorted) {
     const status = statuses[i];
     switch (status.status) {
       case 'success':
