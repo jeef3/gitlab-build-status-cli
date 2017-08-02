@@ -104,6 +104,7 @@ function saveBuildStatus(buildStatus) {
 }
 
 function printStatus(statuses) {
+  console.log(JSON.stringify(statuses, '', 2));
   const table = new Table({
     head: [
       '', 
@@ -122,7 +123,7 @@ function printStatus(statuses) {
           status.name,
         ]);
         break;
-      case 'fail':
+      case 'failed':
         table.push([
           chalk.red('\uf00d'),
           '',
@@ -136,12 +137,26 @@ function printStatus(statuses) {
           status.name,
         ]);
         break;
-      default:
+      case 'skipped':
+        table.push([
+          chalk.white('\uf101'),
+          '',
+          status.name,
+        ]);
+        break;
+      case 'pending':
         table.push([
           chalk.cyan('\uf021'),
           '',
           status.name,
         ]);
+        break;
+      default:
+        table.push([
+          chalk.cyan('\uf128'),
+          '',
+          `${status.name} (${status.status})`,
+        ])
     }
   }
 
