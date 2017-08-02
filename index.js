@@ -161,12 +161,14 @@ function printStatus(statuses) {
           '',
           status.name,
         ]);
+        break;
       case 'created':
         table.push([
           chalk.green('\uf192'),
           '',
           status.name,
-        ])
+        ]);
+        break;
       default:
         table.push([
           chalk.cyan('\uf128'),
