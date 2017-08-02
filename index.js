@@ -104,7 +104,7 @@ function saveBuildStatus(buildStatus) {
 }
 
 function printStatus(statuses) {
-  console.log(JSON.stringify(statuses, '', 2));
+  // console.log(JSON.stringify(statuses, '', 2));
   const table = new Table({
     head: [
       '', 
@@ -151,6 +151,18 @@ function printStatus(statuses) {
           status.name,
         ]);
         break;
+      case 'running':
+        table.push([
+          chalk.green('\uf04b'),
+          '',
+          status.name,
+        ]);
+      case 'created':
+        table.push([
+          chalk.green('\uf192'),
+          '',
+          status.name,
+        ])
       default:
         table.push([
           chalk.cyan('\uf128'),
