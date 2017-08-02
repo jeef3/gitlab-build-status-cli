@@ -9,6 +9,7 @@
     "build-status": "./index.js"
   },
   "dependencies": {
-    "chalk": "^2.0.1"
+    "chalk": "^2.0.1",
+    "cli-table": "^0.3.1"
   }
 }

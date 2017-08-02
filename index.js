@@ -4,6 +4,7 @@ const exec = require('child_process').exec;
 const fs = require('fs');
 
 const chalk = require('chalk');
+const Table = require('cli-table');
 
 const CURRENT_BRANCH = 'git rev-parse --abbrev-ref HEAD';
 const ORIGIN_COMMIT = branch => `git rev-parse origin/${branch}`;
@@ -66,14 +67,14 @@ function fetchBuildStatus(commitsh) {
   const url = `${config.url}/api/v4/projects/${config.projectId}/repository/commits/${commitsh}/statuses`;
 
   return new Promise((resolve, reject) => {
-    if (builds[commitsh]) {
-      resolve({
-        commitsh,
-        status: builds[commitsh]
-      });
+    // if (builds[commitsh]) {
+    //   resolve({
+    //     commitsh,
+    //     status: builds[commitsh]
+    //   });
 
-      return;
-    }
+    //   return;
+    // }
 
     exec(`curl --silent --header "PRIVATE-TOKEN: ${config.privateToken}" "${url}"`,
       (err, stdout, stderr) => {
@@ -82,32 +83,13 @@ function fetchBuildStatus(commitsh) {
           return;
         }
 
+        if (!stdout) {
+          reject('No data');
+          return;
+        }
+
         const statuses = JSON.parse(stdout);
-        const failed = statuses.find(build => build.status === 'failed');
-        const succeeded = statuses.find(build => build.status === 'success');
-
-        if (failed) {
-          resolve({
-            commitsh,
-            status: 'fail',
-          });
-
-          return;
-        }
-
-        if (succeeded) {
-          resolve({
-            commitsh,
-            status: 'success',
-          });
-
-          return;
-        }
-
-        resolve({
-          commitsh,
-          status: 'unknown',
-        });
+        resolve(statuses);
       });
   })
 }
@@ -121,22 +103,56 @@ function saveBuildStatus(buildStatus) {
   return buildStatus;
 }
 
-function printStatus(buildStatus) {
-  switch (buildStatus.status) {
-    case 'success':
-      console.log(chalk.green('\uf00c'));
-      return;
-    case 'fail':
-      console.log(chalk.red('\uf00d'));
-      return;
-    default:
-      console.log(chalk.cyan('\uf128'));
+function printStatus(statuses) {
+  const table = new Table({
+    head: [
+      '', 
+      chalk.white.bold('Coverage'), 
+      chalk.white.bold('Task')
+    ],
+  });
+
+  for (let i in statuses) {
+    const status = statuses[i];
+    switch (status.status) {
+      case 'success':
+        table.push([
+          chalk.green('\uf00c'),
+          status.coverage ? `${status.coverage}%` : '',
+          status.name,
+        ]);
+        break;
+      case 'fail':
+        table.push([
+          chalk.red('\uf00d'),
+          '',
+          status.name
+        ]);
+        break;
+      case 'manual':
+        table.push([
+          chalk.cyan('\uf05e'),
+          '',
+          status.name,
+        ]);
+        break;
+      default:
+        table.push([
+          chalk.cyan('\uf021'),
+          '',
+          status.name,
+        ]);
+    }
   }
+
+  console.log(table.toString());
 }
 
 getCurrentBranch()
   .then(getCommitshForUpstream)
   .then(fetchBuildStatus)
-  .then(saveBuildStatus)
   .then(printStatus)
-  .catch(err => console.log(chalk.cyan('\uf05e')));
+  .catch(err => {
+    console.log(chalk.red('\uf05e Failed'));
+    console.log(err);
+  });
