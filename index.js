@@ -139,7 +139,7 @@ function printStatus(statuses) {
         break;
       case 'skipped':
         table.push([
-          chalk.white('\uf101'),
+          chalk.white('\uf18e'),
           '',
           status.name,
         ]);
